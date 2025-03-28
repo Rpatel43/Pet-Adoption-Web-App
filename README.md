@@ -4,3 +4,4 @@ Joseph Pizzuti jop19011
 Saoudkhan pathan Sap21027
 Rayna Spicher rcs20010
 https://trello.com/b/0zbMYZli/cse2102-team29
+https://www.figma.com/design/0H0O1hAC6xJz2soKSml86l/CSE2102-Site-Prototype?node-id=0-1&t=XUrpxJiLNF33jHGe-1
