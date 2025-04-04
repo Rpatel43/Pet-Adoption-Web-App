@@ -79,11 +79,11 @@
                 <mxCell id="16" value="Fill out signup form" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="130" y="240" width="70" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="POST user data" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="17" value="POST /api/signup" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="320" y="240" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="18" value="Insert new user data" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="530" y="240" width="60" height="30" as="geometry"/>
+                <mxCell id="18" value="INSERT new user data" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="530" y="240" width="80" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" value="Confirm data insertion" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="520" y="350" width="80" height="30" as="geometry"/>

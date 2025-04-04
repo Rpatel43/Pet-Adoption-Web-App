@@ -79,11 +79,11 @@
                 <mxCell id="29" value="Enter login info" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="140" y="250" width="70" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="30" value="POST login info" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="30" value="POST /api/signin" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="330" y="250" width="90" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="31" value="SELECT username" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="540" y="250" width="90" height="30" as="geometry"/>
+                <mxCell id="31" value="SELECT user WHERE usernane=?" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="510" y="250" width="120" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="32" value="Return user record" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="530" y="360" width="80" height="30" as="geometry"/>
