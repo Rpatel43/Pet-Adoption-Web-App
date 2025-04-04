@@ -79,10 +79,10 @@
                 <mxCell id="16" value="Pick filter choice (select animal type)" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="110" y="240" width="110" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="GET pet list under animal type" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="17" value="GET /api/pets?type={}" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="310" y="240" width="100" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="18" value="Select pets of type picked" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="18" value="SELECT pets WHERE type={}" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="530" y="240" width="90" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" value="Return list of pet type" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">

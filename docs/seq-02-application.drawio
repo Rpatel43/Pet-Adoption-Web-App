@@ -79,7 +79,7 @@
                 <mxCell id="44" value="Fills out application" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="140" y="250" width="70" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="45" value="POST application data" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="45" value="POST /api/application" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="330" y="250" width="90" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="46" value="INSERT application data" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
@@ -88,7 +88,7 @@
                 <mxCell id="47" value="Confirm insert" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="530" y="360" width="80" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="48" value="Return application confirmation" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="48" value="Return app. conf." style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="320" y="360" width="100" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="49" value="Display confirmation message" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
