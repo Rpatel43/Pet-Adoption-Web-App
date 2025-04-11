@@ -1,5 +1,6 @@
 """Test file for this iteration of stub/mock API. Includes tests for all possible
 code outcomes out of admin.py, pets.py, and user.py."""
+# pylint: disable=W0621
 import pytest
 from backend.main import build_app
 
