@@ -2,7 +2,7 @@
 code outcomes out of admin.py, pets.py, and user.py."""
 # pylint: disable=W0621
 import pytest
-from backend.main import build_app
+from main import build_app
 
 
 @pytest.fixture
