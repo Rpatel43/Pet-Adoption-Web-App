@@ -1,5 +1,6 @@
 """Main file for API. Handles blueprints and starting the app up."""
 from flask import Flask
+from backend import user, pets, admin
 from user import user_blueprint
 from pets import pets_blueprint
 from admin import admin_blueprint
