@@ -116,7 +116,7 @@ def admin_add_pet_type():
     if new_type.lower() in (pet_type.lower() for pet_type in pet_types):
         return jsonify({"error": "That pet type exists already!"}), 409
     pet_types.append(new_type)
-    return jsonify({"message": "Pet type added", 
+    return jsonify({"message": "Pet type added",
                     "pet_types": pet_types}), 201
 
 
