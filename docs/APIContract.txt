@@ -1,0 +1,130 @@
+API call
+    http method and path
+    input
+    output 
+
+
+pets.py
+
+    get_pets()
+        methods=['GET'], '/pets'
+        no input
+        returns lists of pets
+            {"id": 1, "name": "Dakota", "type": "Dog"},
+            {"id": 2, "name": "Sylvester", "type": "Cat"}
+
+    get_pet()
+        methods=['GET'], '/pet/<int:pet_id>'
+        pet_id 
+        returns details for a pet given a specific pet's pet_id
+            "id": pet_id,
+            "name": "Winston",
+            "type": "Cat",
+            "sex": "M",
+            "bio": "Very friendly cat.",
+            "health_info": "Healthy/Vaccinated",
+            "size": "Small",
+            "weight": "12lbs"
+
+    submit_user_application()
+        methods=['POST'], '/pet/<int:pet_id>/application'
+        no input
+        returns True if application is valid, else returns error
+            "message": "Application submitted", "application": data
+            or 
+            {"error": "Invalid application data"}
+
+    get_pet_types()
+        methods=['GET'], "/pettypes"
+        no input
+        returns list of pet types 
+            {"pet_types": pet_types}
+
+
+user.py
+
+    signin()
+        methods=['POST'], '/signin'
+        username and password 
+        returns validation for login info, either successful login or failure
+            {"message": "User login successful!", "username": username}
+            or
+            {"error": "Missing username/password field :("}
+
+    signup()
+        methods=['POST'], '/signup'
+        signup info; first name, last name, username, password, and password confirmation
+        returns successful login or failure for missing fields
+            {"message": "User successfully created", "username": username}
+
+    signout()
+        methods=['GET'], '/signout'
+        no input, button click
+        returns confirmation for successful signout
+            {"message": "User signed out"}
+
+    user_application()
+        methods=['GET'], '/applications'
+        no input, button click
+        returns list of current applications for logged-in user
+            [
+            {"application_id": 1, "pet_id": 1, "status": "pending"},
+            {"application_id": 2, "pet_id": 2, "status": "denied"},
+            {"application_id": 3, "pet_id": 3, "status": "approved"},
+            ]
+
+    
+admin.py
+
+    admin_signin()
+        methods=['POST'], '/signin'
+        username and password
+        returns login success or failure
+            {"message": "Admin login success", "admin": admin_username}
+
+
+    admin_dashboard()
+        methods=['GET'], '/dashboard'
+        no input
+        returns data for admin such as info on pets and applications
+            {"dashboard": dashboard_data}
+
+    add_pet()
+        methods=['POST'], '/pet'
+        data fields for a pet; name, type, sex, bio, health_info, size, weight
+        returns a new pet listing, with pet data 
+            {"message": "Pet added", "pet": data}
+
+    edit_pet()
+        methods=['PUT'], '/pet/<int:pet_id>'
+        pet_id
+        returns confirmation on pet update or error 
+            {"message": "Pet updated", "pet_id": pet_id, "updates": data}
+
+    delete_pet()
+        methods=['DELETE'], '/pet/<int:pet_id>'
+        pet_id
+        returns message on deleted pet
+            {"message": "Pet deleted", "pet_id": pet_id}
+
+    view_application()
+        methods=['GET'], '/applications'
+        no input
+        returns list of all submitted applications
+            {"applications": applications}
+
+    update_application()
+        methods=['PUT'], '/application/<int:app_id>'
+        app_id
+        returns new status of application
+            {"error": "Invalid data"}
+
+    admin_add_pet_type()
+        methods=['POST'], '/pettypes'
+        no input
+        returns error or added pet message
+
+    admin_delete_pet_type()
+        methods=['DELETE'], '/pettypes/<string:pet_type>'
+        pet_type
+        returns error or deletes pet message

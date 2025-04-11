@@ -99,7 +99,7 @@ def update_application(app_id):
 
 
 # a mock to use for our pet_type funcs
-pet_types = ["Dogs", "Cats"]
+pet_types = ["Dog", "Cat"]
 
 
 @admin_blueprint.route('/pettypes', methods=['POST'])
@@ -116,7 +116,7 @@ def admin_add_pet_type():
     if new_type.lower() in (pet_type.lower() for pet_type in pet_types):
         return jsonify({"error": "That pet type exists already!"}), 409
     pet_types.append(new_type)
-    return jsonify({"message": "Pet type added", 
+    return jsonify({"message": "Pet type added",
                     "pet_types": pet_types}), 201
 
 
