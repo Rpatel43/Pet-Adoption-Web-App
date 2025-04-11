@@ -47,9 +47,9 @@ def signup():
     if password != password_confirm:
         return jsonify({"error": "Failed to confirm password :o"}), 400
     if len(username) < 3 or len(username) > 16:
-        return jsonify({"error": "Username must be 3-16 characters."})
+        return jsonify({"error": "Username must be 3-16 characters."}), 400
     if len(password) < 8 or len(password) > 32:
-        return jsonify({"error": "Password must be 8-32 characters."})
+        return jsonify({"error": "Password must be 8-32 characters."}), 400
     return jsonify({"message": "User successfully created",
                     "username": username}), 201
     ##############################################

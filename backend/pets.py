@@ -45,7 +45,7 @@ def get_pet(pet_id):
     return jsonify({"pet": pet}), 200
 
 @pets_blueprint.route('/pet/<int:pet_id>/application', methods=['POST'])
-def submit_user_application():
+def submit_user_application(pet_id):
     """Checks that the user submitted an application that contains
     data in all fields. Return message if True else error.
     Note how we track petid for routing."""
@@ -56,7 +56,8 @@ def submit_user_application():
     if not data or "pet_id" not in data:
         return jsonify({"error": "Invalid application data"}), 400
     return jsonify({"message": "Application submitted",
-                    "application": data}), 201
+                    "application": data,
+                    "pet_id_received": pet_id}), 201
 
 # define pet initial types for method use
 pet_types = ['Dog', 'Cat']

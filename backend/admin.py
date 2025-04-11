@@ -99,7 +99,7 @@ def update_application(app_id):
 
 
 # a mock to use for our pet_type funcs
-pet_types = ["Dogs", "Cats"]
+pet_types = ["Dog", "Cat"]
 
 
 @admin_blueprint.route('/pettypes', methods=['POST'])
