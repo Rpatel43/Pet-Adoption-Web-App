@@ -15,8 +15,8 @@ def get_pets():
 
     # Stub - return a mock list of pets, filtering by type if provided
     pets_list = [
-        {"id": 1, "name": "Dakota", "type": "Dog"},
-        {"id": 2, "name": "Sylvester", "type": "Cat"}
+        {"id": 1, "name": "Dakota", "type": "Dog", "picture": "example_image/Dakota.png"},
+        {"id": 2, "name": "Sylvester", "type": "Cat", "picture": "example_image/Sylvester.png"}
     ]
     # if the user wants a specific type of pet, filter and return pets of
     # that tpye. Otherwise, return ALL pets.
@@ -40,7 +40,8 @@ def get_pet(pet_id):
         "bio": "Very friendly cat.",
         "health_info": "Healthy/Vaccinated",
         "size": "Small",
-        "weight": "12lbs"
+        "weight": "12lbs",
+        "picture": "example_image/Winston.jpg"
     }
     return jsonify({"pet": pet}), 200
 

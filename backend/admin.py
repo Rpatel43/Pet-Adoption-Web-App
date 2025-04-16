@@ -44,7 +44,7 @@ def add_pet():
     """Controls management's abiltiy to add new pet listings."""
 
     data = request.get_json()
-    data_fields = ['name', 'type', 'sex', 'bio', 'health_info', 'size', 'weight']
+    data_fields = ['name', 'type', 'sex', 'bio', 'health_info', 'size', 'weight', 'picture']
     is_missing = [field for field in data_fields if field not in data or not data[field]]
     if is_missing:
         return jsonify({"error": f"Missing fields: {', '.join(is_missing)}"}), 400
