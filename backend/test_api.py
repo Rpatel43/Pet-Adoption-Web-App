@@ -62,7 +62,7 @@ def test_admin_dashboard(test_client):
 @pytest.mark.parametrize("endpoint, payload, status, expected_key", [
     ('/api/admin/pet', {"name": "Bella", "type": "Dog", "sex": "F", "bio": "Friendly pet",
                         "health_info": "healthy", "size": "Small", "weight": "20lbs",
-                        "status": "Available"}, 201, "message"),
+                        "status": "Available", "picture": "bella.png"}, 201, "message"),
     ('/api/admin/pet', {}, 400, "error")
 ])
 def test_admin_add_pet(test_client, endpoint, payload, status, expected_key):
@@ -255,6 +255,12 @@ def test_get_pet(test_client):
 
     # make sure data is gathered right by pet and id
     assert data["pet"]["id"] == pet_id
+
+    # Check to make sure pet image works as intended
+    pet = data["pet"]
+    assert "picture" in pet
+    assert isinstance(pet["picture"], str)
+    assert pet["picture"] != ""
 
 
 @pytest.mark.parametrize("payload, status, expected_key", [
