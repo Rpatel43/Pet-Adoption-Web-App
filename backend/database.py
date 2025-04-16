@@ -21,7 +21,7 @@ def open_database():
     return g.database
 
 
-def close_database(e=None): # pylint: disable=unused-argument
+def close_database(error=None): # pylint: disable=unused-argument
     """Closes the connection of the database. We pop the connection
     to either get it, or none, and close if need be."""
     connection = g.pop('database', None)
