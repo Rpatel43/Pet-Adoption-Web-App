@@ -1,6 +1,8 @@
 """Contains all endpoints related to pet search and application process
 that will be accessed by non-administrative users."""
+from sqlite3 import Error
 from flask import Blueprint, request, jsonify
+from .database import open_database
 
 # blueprint for main
 pets_blueprint = Blueprint('pets', __name__)
@@ -11,19 +13,20 @@ def get_pets():
     filtered or unfiltered based on user request."""
 
     # default to no pet type selected
-    pet_type = request.args.get('type', None)
+    pet_type = request.args.get('type')
 
-    # Stub - return a mock list of pets, filtering by type if provided
-    pets_list = [
-        {"id": 1, "name": "Dakota", "type": "Dog", "picture": "example_image/Dakota.png"},
-        {"id": 2, "name": "Sylvester", "type": "Cat", "picture": "example_image/Sylvester.png"}
-    ]
-    # if the user wants a specific type of pet, filter and return pets of
-    # that tpye. Otherwise, return ALL pets.
-    if pet_type:
-        filtered = [pet for pet in pets_list if pet['type'] == pet_type]
-        return jsonify({"pets": filtered}), 200
-    return jsonify({"pets": pets_list}), 200
+    database = open_database()
+    # apply filter by checking for pet_type
+    try:
+        if pet_type:
+            cursor = database.execute("SELECT * FROM pets WHERE type = ?", (pet_type,))
+        else:
+            cursor = database.execute("SELECT * FROM pets")
+        # dict form
+        pets = [dict(row) for row in cursor.fetchall()]
+    except Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    return jsonify({"pets": pets}), 200
 
 @pets_blueprint.route('/pet/<int:pet_id>', methods=['GET'])
 def get_pet(pet_id):
@@ -31,19 +34,15 @@ def get_pet(pet_id):
     information that will be displayed on a pets profile page.
     Note how we track petid for routing."""
 
-    # Stub - return mock details for a pet
-    pet = {
-        "id": pet_id,
-        "name": "Winston",
-        "type": "Cat",
-        "sex": "M",
-        "bio": "Very friendly cat.",
-        "health_info": "Healthy/Vaccinated",
-        "size": "Small",
-        "weight": "12lbs",
-        "picture": "example_image/Winston.jpg"
-    }
-    return jsonify({"pet": pet}), 200
+    database = open_database()
+    row = database.execute(
+        "SELECT * FROM pets WHERE id = ?", (pet_id,)
+    ).fetchone()
+
+    if not row:
+        return jsonify({"error": "Pet listing not found"}), 404
+    # return dict of row for data formatting
+    return jsonify({"pet": dict(row)}), 200
 
 @pets_blueprint.route('/pet/<int:pet_id>/application', methods=['POST'])
 def submit_user_application(pet_id):
