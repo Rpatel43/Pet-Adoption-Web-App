@@ -1,18 +1,13 @@
-"""File that controls all enpoints for everything related to the admin
+"""File that controls all endpoints for everything related to the admin
 portal and beyond, from signing in to managing services."""
-import os
+
 from functools import wraps
-from flask import Blueprint, request, jsonify, current_app, session
+from flask import Blueprint, request, jsonify, session
 
 
 # blueprint for main
 admin_blueprint = Blueprint('admin', __name__)
 
-# Create folder for uploading pet photots
-# root/static/uploads/ = path made with os
-PET_PHOTO_DIRECTORY = os.path.join(current_app.root_path, 'static', 'uploads')
-os.makedirs(PET_PHOTO_DIRECTORY, exist_ok=True) # exist_ok prevents error call in case
-                                                # its already there
 
 def admin_only(function):
     """Wrap for functions that ensures only admin users are capable of accessing
@@ -50,7 +45,7 @@ def admin_signin():
 @admin_blueprint.route('/dashboard', methods=['GET'])
 @admin_only
 def admin_dashboard():
-    """Contains all neccessary data that the admin may or may not
+    """Contains all necessary data that the admin may or may not
     need access to when using the management portal."""
 
     # Stub - return fake dashboard data
