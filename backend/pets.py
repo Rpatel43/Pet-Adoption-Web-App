@@ -10,8 +10,33 @@ pets_blueprint = Blueprint('pets', __name__)
 
 @pets_blueprint.route('/pets', methods=['GET'])
 def get_pets():
-    """function that controls the web-apps gathering of the list of pets,
-    filtered or unfiltered based on user request."""
+    """
+    function that controls the web-apps gathering of the list of pets,
+    filtered or unfiltered based on user request.
+    ---
+    tags:
+      - Pets
+    parameters:
+      - in: query
+        name: type
+        schema:
+          type: string
+        description: Filter by pet type
+    responses:
+      200:
+        description: JSON object with \"pets\" array
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pets:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Pet'
+      500:
+        description: Database error
+    """
 
     # default to no pet type selected
     pet_type = request.args.get('type')
@@ -31,9 +56,35 @@ def get_pets():
 
 @pets_blueprint.route('/pet/<int:pet_id>', methods=['GET'])
 def get_pet(pet_id):
-    """Function that uses petid to route and gather ALL relevant
+    """
+    Function that uses petid to route and gather ALL relevant
     information that will be displayed on a pets profile page.
-    Note how we track petid for routing."""
+    Note how we track petid for routing.
+    ---
+    tags:
+      - Pets
+    parameters:
+      - in: path
+        name: pet_id
+        schema:
+          type: integer
+        required: true
+        description: ID of the pet
+    responses:
+      200:
+        description: A single pet object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pet:
+                  $ref: '#/components/schemas/Pet'
+      404:
+        description: Pet not found
+      500:
+        description: Database error
+    """
 
     database = open_database()
     row = database.execute(
@@ -48,9 +99,51 @@ def get_pet(pet_id):
 @pets_blueprint.route('/pet/<int:pet_id>/application', methods=['POST'])
 @user_only
 def submit_user_application(pet_id):
-    """Checks that the user submitted an application that contains
+    """
+    Checks that the user submitted an application that contains
     data in all fields. Return message if True else error.
-    Note how we track petid for routing."""
+    Note how we track petid for routing.
+    ---
+    tags:
+      - Applications
+    parameters:
+      - in: path
+        name: pet_id
+        schema:
+          type: integer
+        required: true
+        description: ID of the pet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - application_response
+            properties:
+              application_response:
+                type: string
+                description: \"Why you’d make a great owner\"
+    responses:
+      201:
+        description: Application created
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                application_id:
+                  type: integer
+      400:
+        description: Missing application_response
+      401:
+        description: Unauthorized
+      500:
+        description: Database error
+    """
 
     data = request.get_json()
 
@@ -82,9 +175,28 @@ def submit_user_application(pet_id):
 
 @pets_blueprint.route("/pettypes", methods=['GET'])
 def get_pet_types():
-    """Returns list of pet types. This is going to be used
+    """
+    Returns list of pet types. This is going to be used
     for the dropdown menu we create for the user to filter by
-    animal type."""
+    animal type.
+    ---
+    tags:
+      - Pets
+    responses:
+      200:
+        description: JSON object with \"pet_types\" array
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pet_types:
+                  type: array
+                  items:
+                    type: string
+      500:
+        description: Database error
+    """
 
     database = open_database()
     # try-exc again
