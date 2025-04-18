@@ -3,6 +3,7 @@ that will be accessed by non-administrative users."""
 from sqlite3 import Error
 from flask import Blueprint, request, jsonify, session
 from .database import open_database
+from .user import user_only
 
 # blueprint for main
 pets_blueprint = Blueprint('pets', __name__)
@@ -45,6 +46,7 @@ def get_pet(pet_id):
     return jsonify({"pet": dict(row)}), 200
 
 @pets_blueprint.route('/pet/<int:pet_id>/application', methods=['POST'])
+@user_only
 def submit_user_application(pet_id):
     """Checks that the user submitted an application that contains
     data in all fields. Return message if True else error.
