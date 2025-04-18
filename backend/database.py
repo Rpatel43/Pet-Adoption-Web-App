@@ -102,6 +102,29 @@ def init_database():
         """
     )
 
+    # Admin data table
+    # Notes
+    # - UNIQUE username
+    database.execute(
+        """
+        CREATE TABLE IF NOT EXISTS admins (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
+        );
+        """
+    )
+
+    # Admin initial data
+    # setup cursor
+    cursor = database.execute("SELECT COUNT(*) AS count FROM admins;")
+    # if no admin login exists:
+    if cursor.fetchone()["count"] == 0:
+        database.execute(
+            "INSERT INTO admins (username, password) VALUES (?, ?)",
+            ("admin", "admin123")
+        )
+
     # Pet Types initial data
     # set up cursor and row of access
     cursor = database.execute("SELECT COUNT(*) as count FROM pet_types;")
