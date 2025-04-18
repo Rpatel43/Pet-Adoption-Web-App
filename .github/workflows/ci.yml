@@ -14,12 +14,17 @@ jobs:
   build:
     runs-on: self-hosted
 
+    env:
+      FLASK_APP: backend.main
+      SECRET_KEY: $({ secrets.SECRET_KEY })
+      DATABASE: backend/pet_adoption_website.db
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -35,3 +40,7 @@ jobs:
       - name: Run Unit Tests
         run: |
           python -m pytest backend/test_api.py
+
+      - name: Build Docker Image
+        run: |
+          docker build -t team29/pet-adopt-api:latest backend/
