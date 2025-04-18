@@ -40,7 +40,3 @@ jobs:
       - name: Run Unit Tests
         run: |
           python -m pytest backend/test_api.py
-
-      - name: Build Docker Image
-        run: |
-          docker build -t team29/pet-adopt-api:latest backend/

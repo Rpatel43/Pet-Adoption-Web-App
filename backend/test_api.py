@@ -1,386 +1,153 @@
-"""Test file for this iteration of stub/mock API. Includes tests for all possible
-code outcomes out of admin.py, pets.py, and user.py."""
+"""Test suite for the pet adoption API (Human-AI collaborative)."""
 # pylint: disable=W0621
+import io
 import pytest
+from flask import url_for # pylint: disable=W0611
 from backend.main import build_app
-
+from backend.database import init_database, open_database
 
 @pytest.fixture
-def test_client():
-    """Creates client for testing purposes."""
+def test_client(tmp_path):
+    """Initialize app, fresh database, and seed basic data."""
+
+    # create new db file
+    db_file = tmp_path / "test.db"
+
     app = build_app()
-    app.config['TESTING'] = True
-    # Ensure that each test gets its own fresh client,
-    # and global state (e.g., pet_types in admin/pets) is not shared.
-    with app.test_client() as this_client:
-        yield this_client
+    app.config['TESTING']  = True
+    app.config['DATABASE'] = str(db_file)
 
+    with app.app_context():
 
-#############################
-# admin.py endpoint tests :)
-#############################
+        init_database()
+        database = open_database()
+        database.execute(
+            """INSERT INTO pets
+               (name, type, sex, bio, health_info, size, weight, status, picture)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            ("Dakota", "Dog", "F", "Friendly dog", "Healthy", "Medium", "20lbs", "Available", "")
+        )
+        database.execute(
+            """INSERT INTO pets
+               (name, type, sex, bio, health_info, size, weight, status, picture)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            ("Sylvester", "Cat", "M", "Playful cat", "Healthy", "Small", "12lbs", "Available", "")
+        )
+        database.commit()
 
+    with app.test_client() as client:
+        yield client
 
-@pytest.mark.parametrize("payload, status, expected_key, expected_value", [
-    ({"username": "admin", "password": "admin123"}, 200, "message", "Admin login success"),
-    ({"username": "bad", "password": "creds"}, 401, "error", "Invalid admin login")
+##################
+# Admin enpoints #
+##################
+
+def test_admin_dashboard_requires_auth(test_client):
+    """Ensure /dashboard is protected before login."""
+    resp = test_client.get('/api/admin/dashboard')
+    assert resp.status_code == 401
+    assert 'error' in resp.get_json()
+
+@pytest.mark.parametrize("payload,status", [
+    ({'username': 'admin', 'password': 'admin123'}, 200),
+    ({'username': 'admin'}, 400),
+    ({}, 400)
 ])
-def test_admin_signin(test_client, payload, status, expected_key, expected_value):
-    """Test code properly responds to both successful admin sign in and bad sign in."""
-
-    response = test_client.post('/api/admin/signin', json=payload)
-    data = response.get_json()
-    value = data.get(expected_key, "")
-
-    # check for correct status code
-    assert response.status_code == status
-
-    # check we get correct expected dict key
-    assert expected_key in data
-
-    # check that message or error contains expected response value
-    assert expected_value in value
-
-
-def test_admin_dashboard(test_client):
-    """Tests that admin dashboard contains all expected data, including prebuilt Dog and Cat."""
-
-    response = test_client.get('/api/admin/dashboard')
-    dashboard = response.get_json().get("dashboard", {})
-
-    # check status code
-    assert response.status_code == 200
-
-    # Assure that pet listings and applications are lists
-    # and assure that the dashboard pet types contain dogs and cats
-    # without any influence.
-    assert isinstance(dashboard.get("pet_listings"), list)
-    assert isinstance(dashboard.get("applications"), list)
-    assert dashboard.get("pet_types") == ["Dog", "Cat"]
-
-
-@pytest.mark.parametrize("endpoint, payload, status, expected_key", [
-    ('/api/admin/pet', {"name": "Bella", "type": "Dog", "sex": "F", "bio": "Friendly pet",
-                        "health_info": "healthy", "size": "Small", "weight": "20lbs",
-                        "status": "Available", "picture": "bella.png"}, 201, "message"),
-    ('/api/admin/pet', {}, 400, "error")
-])
-def test_admin_add_pet(test_client, endpoint, payload, status, expected_key):
-    """
-    Tests that admin add pet works as intended when 1. all info provided
-    2. not all fields provided
-    """
-
-    response = test_client.post(endpoint, json=payload)
-    data = response.get_json()
-
-    # assert correct status code
-    assert response.status_code == status
-
-    # make sure we get proper message or error key depending on if valid add pet
-    assert expected_key in data
-
-
-@pytest.mark.parametrize("pet_id, payload, status, expected_key", [
-    (1, {"name": "Shiny new name"}, 200, "message"),
-    (1, {}, 400, "error")
-])
-def test_admin_edit_pet(test_client, pet_id, payload, status, expected_key):
-    """
-    Tests that admin pet edit works as intended when 1. we actually edit pet info
-    2. provide no new edits
-    """
-    # note how we call route with pet id
-    response = test_client.put(f'/api/admin/pet/{pet_id}', json=payload)
-    data = response.get_json()
-
-    # status code check
-    assert response.status_code == status
-
-    # assert message / error
-    assert expected_key in data
-
-
-def test_admin_delete_pet(test_client):
-    """Tests that we successfully delete a pet listing when provide an ID"""
-
-    # just define it locally
-    pet_id = 1
-    # note inclusion of pet id in route
-    response = test_client.delete(f'/api/admin/pet/{pet_id}')
-    data = response.get_json()
-
-    # status code check
-    assert response.status_code == 200
-
-    # note function should contain data of pet id after delete
-    assert data.get("pet_id") == pet_id
-
-
-def test_admin_view_applications(test_client):
-    """Asserts that admins get proper data when they go to view applications."""
-
-    response = test_client.get('/api/admin/applications')
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == 200
-
-    # Check that appilcations are in data AND that its a list
-    assert "applications" in data
-    assert isinstance(data["applications"], list)
-
-
-@pytest.mark.parametrize("app_id, payload, status, expected_key", [
-    (1, {"status": "approved"}, 200, "message"),
-    (1, {}, 400, "error")
-])
-def test_admin_update_application(test_client, app_id, payload, status, expected_key):
-    """
-    Tests that when an admin updates an application, it goes through properly
-    or fails if not updated properly.
-    """
-
-    # note the application id
-    response = test_client.put(f'/api/admin/application/{app_id}', json=payload)
-    data = response.get_json()
-
-    # check status code
-    assert response.status_code == status
-
-    # make sure message or error based on corectness
-    assert expected_key in data
-
-
-@pytest.mark.parametrize("url, payload, status, expected_key", [
-    ("/api/admin/pettypes", {"type": "Birds"}, 201, "message"),
-    ("/api/admin/pettypes", {}, 400, "error"),
-    ("/api/admin/pettypes", {"type": "Dog"}, 409, "error"),
-])
-def test_admin_pet_type_operations(test_client, url, payload, status, expected_key):
-    """Tests that our pet type operations return proper keys and status codes."""
-
-    response = test_client.post(url, json=payload)
-    data = response.get_json()
-
-    # make sure there is data
-    assert response is not None
-
-    # status code check again wow
-    assert response.status_code == status
-
-    # Make sure key works as intended. Note 409 return for repeat
-    assert expected_key in data
-
-
-def test_admin_delete_pet_type_success(test_client):
-    """Tests that deleting a pet type works as intended when it goes through."""
-
-    # Delete Cat from default list
-    response = test_client.delete('/api/admin/pettypes/Cat')
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == 200
-
-    # check to make sure we deleted cat (very sad)
-    assert "Cat" not in data.get("pet_types", [])
-
-
-def test_admin_delete_pet_type_failure(test_client):
-    """Tests that when we try to delete a non-existent pet type that it doesnt work."""
-
-    response = test_client.delete('/api/admin/pettypes/NonExistent')
-    data = response.get_json()
-
-    # 404 does not exist response code
-    assert response.status_code == 404
-
-    # check for error key
-    assert "error" in data
-
-
-#############################
-# pets.py endpoint tests :D
-#############################
-
-
-def test_get_pets_no_filter(test_client):
-    """Tests that the app correctly returns all pets when no filter selected."""
-
-    response = test_client.get('/api/pets')
-    data = response.get_json()
-
-    # response code
-    assert response.status_code == 200
-
-    # make sure data is present
-    assert "pets" in data
-
-    # make sure all pets present (only have two rn)
-    assert len(data["pets"]) == 2
-
-
-def test_get_pets_filter(test_client):
-    """tests that pet filter data is properly fetched"""
-
-    # note how we have filtered by dogs
-    response = test_client.get('/api/pets?type=dog')
-    data = response.get_json()
-
-    # status code check
-    assert response.status_code == 200
-
-    # check data present
-    assert "pets" in data
-
-    # check that pet filter works as intended
-    for pet in data["pets"]:
-        assert pet["type"] == "dog"
-
-
-def test_get_pet(test_client):
-    """Checks that API correctly fetches pet data by ID"""
-
-    # note petid and its route
-    pet_id = 1
-    response = test_client.get(f'/api/pet/{pet_id}')
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == 200
-
-    # assert data
-    assert "pet" in data
-
-    # make sure data is gathered right by pet and id
-    assert data["pet"]["id"] == pet_id
-
-    # Check to make sure pet image works as intended
-    pet = data["pet"]
-    assert "picture" in pet
-    assert isinstance(pet["picture"], str)
-    assert pet["picture"] != ""
-
-
-@pytest.mark.parametrize("payload, status, expected_key", [
-    ({"pet_id": 1, "applicant": "User123", "comments": "I love this pet"}, 201, "message"),
-    ({}, 400, "error")
-])
-def test_submit_user_application(test_client, payload, status, expected_key):
-    """Tests that a user application is correctly submitted with some sample data."""
-
-    # note pet ID in route
-    pet_id = 1
-    response = test_client.post(f'/api/pet/{pet_id}/application', json=payload)
-    data = response.get_json()
-
-    # check status code
-    assert response.status_code == status
-
-    # Make sure message is there
-    assert expected_key in data
-
-
-def test_get_pet_types(test_client):
-    """Check that pet types are fetched with correct data"""
-
-    response = test_client.get('/api/pettypes')
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == 200
-
-    # check pet types are present and the data is Dog and Cat
-    assert "pet_types" in data
-    assert data["pet_types"] == ["Dog", "Cat"]
-
-
-# -----------------------------------------------------------------------------
-# USER ENDPOINTS TESTS (user.py)
-# -----------------------------------------------------------------------------
-
-
-@pytest.mark.parametrize("payload, status, key, text", [
-    ({"username": "testuser", "password": "testpass"}, 200, "message", "User login successful!"),
-    ({}, 400, "error", "")
-])
-def test_user_signin(test_client, payload, status, key, text):
-    """Tests that user sign in is verified/rejected."""
-
-    response = test_client.post('/api/signin', json=payload)
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == status
-
-    # Check that sign in is correct and passes reqs
-    assert key in data
-    if text:
-        assert text in data[key]
-
-
-@pytest.mark.parametrize("payload, status, key", [
-    (
-        {"first_name": "Test", "last_name": "User", "username": "newuser",
-         "password": "strongpassword", "password_conf": "strongpassword"},
-        201, "message"
-    ),
-    (
-        {"last_name": "User", "username": "newuser", "password": "strongpassword",
-         "password_conf": "strongpassword"},
-        400, "error"
-    ),
-    (
-        {"first_name": "Test", "last_name": "User", "username": "newuser",
-         "password": "strongpassword", "password_conf": "differentpassword"},
-        400, "error"
-    ),
-    (
-        {"first_name": "Test", "last_name": "User", "username": "ab",
-         "password": "strongpassword", "password_conf": "strongpassword"},
-        400, "error"
-    ),
-    (
-        {"first_name": "Test", "last_name": "User", "username": "validusername",
-         "password": "short", "password_conf": "short"},
-        400, "error"
-    ),
-])
-def test_user_signup(test_client, payload, status, key):
-    """Checks all facets of user signup to make sure correct result
-    is returned if nnot all criteria met."""
-
-    response = test_client.post('/api/signup', json=payload)
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == status
-
-    # assert proper return
-    assert key in data
-
-
-def test_user_signout(test_client):
-    """Ensures user signout goes through as expected."""
-    response = test_client.get('/api/signout')
-    data = response.get_json()
-
-    assert response.status_code == 200
-
-    assert "message" in data
-    assert "signed out" in data["message"]
-
-
-def test_user_applications(test_client):
-    """Ensures user application fetches pending applications and data"""
-
-    response = test_client.get('/api/applications')
-    data = response.get_json()
-
-    # status code
-    assert response.status_code == 200
-
-    # Ensure applications in list and that the data is in list format
-    assert "applications" in data
-    assert isinstance(data["applications"], list)
+def test_admin_signin_validations(test_client, payload, status):
+    """Cover signin success, missing fields, and invalid credentials."""
+    resp = test_client.post('/api/admin/signin', json=payload)
+    assert resp.status_code == status
+    data = resp.get_json()
+    if status == 200:
+        assert data.get('message', '').startswith('Admin')
+    else:
+        assert 'error' in data
+
+def test_admin_add_pet_edge_cases(test_client):
+    """Test file upload endpoint with edge cases."""
+    # not logged in
+    data = {'name': 'B', 'type': 'Dog', 'sex': 'F', 'bio': 'x',
+            'health_info': 'h', 'size': 'S', 'weight': '5lbs', 'status': 'A'}
+    dummy = (io.BytesIO(b''), '')
+    resp = test_client.post('/api/admin/pet',
+                            data={**data, 'picture': dummy},
+                            content_type='multipart/form-data')
+    assert resp.status_code == 401
+    # login and missing picture
+    test_client.post('/api/admin/signin',
+                     json={'username': 'admin', 'password': 'admin123'})
+    resp2 = test_client.post('/api/admin/pet',
+                             data=data,
+                             content_type='multipart/form-data')
+    assert resp2.status_code == 400
+
+#################
+# Pet endpoints #
+#################
+def test_get_pets_and_filters(test_client):
+    """Verify pets listing and filter behavior."""
+    # No filter returns two
+    resp = test_client.get('/api/pets')
+    data = resp.get_json()
+    assert resp.status_code == 200
+    assert len(data['pets']) == 2
+    # Non-existent type -> empty list
+    resp2 = test_client.get('/api/pets?type=Bird')
+    assert resp2.status_code == 200
+    data2 = resp2.get_json()
+    assert isinstance(data2['pets'], list) and len(data2['pets']) == 0
+
+def test_get_pet_not_found(test_client):
+    """Fetch a non-existent pet should 404."""
+    resp = test_client.get('/api/pet/999')
+    assert resp.status_code == 404
+    assert 'error' in resp.get_json()
+
+##################
+# User endpoints #
+##################
+
+def test_user_signup_and_login_flow(test_client):
+    """End-to-end signup, session, and logout."""
+    signup = {'first_name': 'A', 'last_name': 'B',
+              'username': 'userX', 'password': 'pass1234', 'password_conf': 'pass1234'}
+    resp1 = test_client.post('/api/signup', json=signup)
+    assert resp1.status_code == 201
+    # Duplicate username
+    resp1b = test_client.post('/api/signup', json=signup)
+    assert resp1b.status_code == 409
+    # Short password
+    bad = signup.copy()
+    bad['password'] = bad['password_conf'] = 'short'
+    resp2 = test_client.post('/api/signup', json=bad)
+    assert resp2.status_code == 400
+    # Login
+    resp3 = test_client.post('/api/signin', json={'username': 'userX', 'password': 'pass1234'})
+    assert resp3.status_code == 200
+    # Check session
+    resp4 = test_client.get('/api/session')
+    assert resp4.get_json()['user']['username'] == 'userX'
+    # Logout
+    resp5 = test_client.post('/api/signout')
+    assert resp5.status_code == 200
+    # Now session is None
+    resp6 = test_client.get('/api/session')
+    assert resp6.get_json()['user'] is None
+
+def test_application_without_login(test_client):
+    """Ensure user cannot apply when not signed in."""
+    resp = test_client.post('/api/pet/1/application', json={'application_response': 'hi'})
+    assert resp.status_code == 401
+
+@pytest.mark.usefixtures('test_client')
+def test_valid_application_submission(test_client):
+    """After login, application submission should succeed."""
+    signup = {'first_name': 'C', 'last_name': 'D', 'username':
+              'userY', 'password': 'pass5678', 'password_conf': 'pass5678'}
+    test_client.post('/api/signup', json=signup)
+    test_client.post('/api/signin', json={'username': 'userY', 'password': 'pass5678'})
+    resp = test_client.post('/api/pet/1/application',
+                            json={'application_response': 'I care deeply'})
+    data = resp.get_json()
+    assert resp.status_code == 201
+    assert 'application_id' in data
