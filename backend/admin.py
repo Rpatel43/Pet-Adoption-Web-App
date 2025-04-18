@@ -1,4 +1,4 @@
-"""File that controls all endpoints for everything related to the admin
+"""File that controls all enpoints for everything related to the admin
 portal and beyond, from signing in to managing services."""
 import os
 from sqlite3 import IntegrityError
@@ -10,7 +10,7 @@ from backend.database import open_database
 # blueprint for main
 admin_blueprint = Blueprint('admin', __name__)
 
-# Create folder for uploading pet photos
+# Create folder for uploading pet photots
 # root/static/uploads/ = path made with os
 # PET_PHOTO_DIRECTORY = os.path.join(current_app.root_path, 'static', 'uploads')
 # os.makedirs(PET_PHOTO_DIRECTORY, exist_ok=True) # exist_ok prevents error call in case
@@ -31,9 +31,7 @@ def admin_only(function):
     return wrap
 
 
-  
 @admin_blueprint.route('/signin', methods=['POST'])
-@admin_only
 def admin_signin():
     """
     Manages admin sign in, ensuring login matches some currently hard
@@ -121,7 +119,7 @@ def admin_dashboard():
 
     # we turn the fetchall data from database into a list of dictionaries
     # so we can turn the columns and rows into key value pairs
-    # for pet types we can access with index because of the ROW FACTORY!!!
+    # for pet types we can access with index because of thr ROW FACTORY!!!
     pets = [dict(row) for row in database.execute("SELECT * FROM pets").fetchall()]
     applications = [dict(row) for row in database.execute("SELECT * FROM applications").fetchall()]
     pet_types = [row["type"] for row in database.execute("SELECT type FROM pet_types").fetchall()]
@@ -138,7 +136,7 @@ def admin_dashboard():
 @admin_only
 def add_pet():
     """
-    Controls management's abilty to add new pet listings.
+    Controls management's abiltiy to add new pet listings.
     ---
     tags:
       - Admin
@@ -434,7 +432,7 @@ def admin_add_pet_type():
 
     # database woot
     database = open_database()
-    # we do not want to create duplicate pet types so we will catch it here
+    # we do not want to crete duplicate pet types so we will catch it here
     # with sqlite's integrity error
     try:
         database.execute("INSERT INTO pet_types (type) VALUES (?)", (new_type,))
