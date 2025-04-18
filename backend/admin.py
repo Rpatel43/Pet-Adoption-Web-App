@@ -3,7 +3,7 @@ portal and beyond, from signing in to managing services."""
 import os
 from functools import wraps
 from flask import Blueprint, request, jsonify, current_app, session
-
+from .database import open_database
 
 # blueprint for main
 admin_blueprint = Blueprint('admin', __name__)
@@ -43,7 +43,7 @@ def admin_only(function):
         return function(*args, **kwargs)
     return wrap
 
-
+  
 @admin_blueprint.route('/signin', methods=['POST'])
 @admin_only
 def admin_signin():
@@ -54,12 +54,32 @@ def admin_signin():
     admin_username = data.get('username')
     admin_password = data.get('password')
 
-    # Stub - check admin login info
-    # for now we use hard coded results until we can
-    # put admin login data in its own table in db
-    if admin_username == "admin" and admin_password == "admin123":
-        return jsonify({"message": "Admin login success", "admin": admin_username}), 200
-    return jsonify({"error": "Invalid admin login"}), 401
+    # Check user supplied username and pass
+    if not admin_username or not admin_password:
+        return jsonify({"error": "User did not provide username or password."}), 400
+
+    # DATABASE
+    database = open_database()
+    cursor = database.execute("SELECT * FROM admins where username = ? AND password = ?",
+                              (admin_username, admin_password))
+    admin = cursor.fetchone()
+    if not admin:
+        return jsonify({"error": "Invalid login for admin user."}), 401
+
+    # NOTE WE ESTABLISH THE SESSION HERE!:
+    # admin_user is how we call in future to ensure we are on admin account!
+    session['admin_user'] = admin_username
+    return jsonify({"message": "Admin successfully logged in,", "admin": admin_username}), 200
+
+
+
+@admin_blueprint.route('/signout', methods=['POST'])
+@admin_only
+def admin_signout():
+    """Sign out the logged in admin user with a session clear."""
+    session.pop('admin_user', None)
+    return jsonify({'message': 'Admin signed out'}), 200
+
 
 
 @admin_blueprint.route('/dashboard', methods=['GET'])
