@@ -10,7 +10,7 @@ from .database import open_database
 # blueprint for main
 admin_blueprint = Blueprint('admin', __name__)
 
-# Create folder for uploading pet photots
+# Create folder for uploading pet photos
 # root/static/uploads/ = path made with os
 PET_PHOTO_DIRECTORY = os.path.join(current_app.root_path, 'static', 'uploads')
 os.makedirs(PET_PHOTO_DIRECTORY, exist_ok=True) # exist_ok prevents error call in case
@@ -30,42 +30,34 @@ def admin_only(function):
         return function(*args, **kwargs)
     return wrap
 
-
-def admin_only(function):
-    """Wrap for functions that ensures only admin users are capable of accessing
-    certain application functions. Attached to all admin functions."""
-
-    @wraps(function)
-    def wrap(*args, **kwargs):
-        """Wrap that utilizes session cookie to check if a user
-        can or cannot access the management portals services."""
-
-        if "admin_user" not in session:
-            return jsonify({"error": "User is not authorized."}), 401
-        return function(*args, **kwargs)
-    return wrap
-
-
-def admin_only(function):
-    """Wrap for functions that ensures only admin users are capable of accessing
-    certain application functions. Attached to all admin functions."""
-
-    @wraps(function)
-    def wrap(*args, **kwargs):
-        """Wrap that utilizes session cookie to check if a user
-        can or cannot access the management portals services."""
-
-        if "admin_user" not in session:
-            return jsonify({"error": "User is not authorized."}), 401
-        return function(*args, **kwargs)
-    return wrap
-
   
 @admin_blueprint.route('/signin', methods=['POST'])
 @admin_only
 def admin_signin():
-    """Manages admin sign in, ensuring login matches some currently hard
-    coded login information."""
+    """
+    Manages admin sign in, ensuring login matches some currently hard
+    coded login information.
+    ---
+    tags:
+      - Admin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [username, password]
+            properties:
+              username: { type: string }
+              password: { type: string }
+    responses:
+      200:
+        description: Admin login successful
+      400:
+        description: Missing fields
+      401:
+        description: Invalid credentials
+    """
 
     data = request.get_json()
     admin_username = data.get('username')
@@ -93,6 +85,17 @@ def admin_signin():
 @admin_blueprint.route('/signout', methods=['POST'])
 @admin_only
 def admin_signout():
+    """
+    Sign out the logged in admin user with a session clear.
+    ---
+    tags:
+      - Admin
+    responses:
+      200:
+        description: Admin signed out
+      401:
+        description: Unauthorized
+    """
     """Sign out the logged in admin user with a session clear."""
     session.pop('admin_user', None)
     return jsonify({'message': 'Admin signed out'}), 200
@@ -102,7 +105,17 @@ def admin_signout():
 @admin_blueprint.route('/dashboard', methods=['GET'])
 @admin_only
 def admin_dashboard():
-    """Returns all pet listings, applications, and pet types from our new fancy database o.o"""
+    """
+    Returns all pet listings, applications, and pet types from our new fancy database o.o
+    ---
+    tags:
+      - Admin
+    responses:
+      200:
+        description: JSON with pets, applications, and pet_types
+      401:
+        description: Unauthorized
+    """
 
     database = open_database()
 
@@ -124,7 +137,38 @@ def admin_dashboard():
 @admin_blueprint.route('/pet', methods=['POST'])
 @admin_only
 def add_pet():
-    """Controls management's abiltiy to add new pet listings."""
+    """
+    Controls management's abiltiy to add new pet listings.
+    ---
+    tags:
+      - Admin
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required: [name,type,sex,bio,health_info,size,weight,status,picture]
+            properties:
+              name:        { type: string }
+              type:        { type: string }
+              sex:         { type: string }
+              bio:         { type: string }
+              health_info: { type: string }
+              size:        { type: string }
+              weight:      { type: string }
+              status:      { type: string }
+              picture:
+                type: string
+                format: binary
+    responses:
+      201:
+        description: Pet created
+      400:
+        description: Validation error or missing file
+      401:
+        description: Unauthorized
+    """
 
     # first make sure the data fields are present in the form
     data_fields = ['name', 'type', 'sex', 'bio', 'health_info', 'size', 'weight', 'status']
@@ -167,7 +211,43 @@ def add_pet():
 @admin_blueprint.route('/pet/<int:pet_id>', methods=['PUT'])
 @admin_only
 def edit_pet(pet_id):
-    """Controls management's ability to edit an existing pet listing."""
+    """
+    Controls management's ability to edit an existing pet listing.
+    ---
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: pet_id
+        schema:
+          type: integer
+        required: true
+        description: ID of the pet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name, type, sex, bio, health_info, size, weight, status, picture]
+            properties:
+              name:        { type: string }
+              type:        { type: string }
+              sex:         { type: string }
+              bio:         { type: string }
+              health_info: { type: string }
+              size:        { type: string }
+              weight:      { type: string }
+              status:      { type: string }
+              picture:     { type: string }
+    responses:
+      200:
+        description: Pet updated
+      400:
+        description: Missing fields
+      401:
+        description: Unauthorized
+    """
 
     # Data grab and verify all fields present on edit
     data = request.get_json() or {} # if there is somehow an empty pet listing
@@ -208,7 +288,23 @@ def edit_pet(pet_id):
 @admin_blueprint.route('/pet/<int:pet_id>', methods=['DELETE'])
 @admin_only
 def delete_pet(pet_id):
-    """Controls management's ability to delete existing pet listings."""
+    """
+    Controls management's ability to delete existing pet listings.
+    ---
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: pet_id
+        schema:
+          type: integer
+        required: true
+    responses:
+      200:
+        description: Pet deleted
+      401:
+        description: Unauthorized
+    """
 
     database = open_database()
     # note the comma so sqlite gets its one-element tuple
@@ -223,7 +319,17 @@ def delete_pet(pet_id):
 @admin_blueprint.route('/applications', methods=['GET'])
 @admin_only
 def view_applications():
-    """Grabs list of all currently submitted pet applications."""
+    """
+    Grabs list of all currently submitted pet applications.
+    ---
+    tags:
+      - Admin
+    responses:
+      200:
+        description: JSON with “applications” array
+      401:
+        description: Unauthorized
+    """
 
     database = open_database()
     # same dict row trick as earlier
@@ -235,8 +341,35 @@ def view_applications():
 @admin_blueprint.route('/application/<int:app_id>', methods=['PUT'])
 @admin_only
 def update_application(app_id):
-    """Allows management to update the status of an application.
-    Note how we need to take in the application ID."""
+    """
+    Allows management to update the status of an application.
+    Note how we need to take in the application ID.
+    ---
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: app_id
+        schema:
+          type: integer
+        required: true
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: { type: string, enum: ['pending','approved','denied'] }
+    responses:
+      200:
+        description: Application updated
+      400:
+        description: Missing status
+      401:
+        description: Unauthorized
+    """
 
     data = request.get_json() or {} # if empty
     status = data.get("status")
@@ -268,8 +401,29 @@ def update_application(app_id):
 @admin_blueprint.route('/pettypes', methods=['POST'])
 @admin_only
 def admin_add_pet_type():
-    """ Admin endpoint to add a new pet type.
-    Expects a JSON input of { "type": "new_type" }"""
+    """ 
+    Admin endpoint to add a new pet type.
+    Expects a JSON input of { "type": "new_type" }
+    ---
+    tags:
+      - Admin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [type]
+            properties:
+              type: { type: string }
+    responses:
+      201:
+        description: Pet type added
+      400:
+        description: Missing type
+      409:
+        description: Duplicate type
+    """
 
     data = request.get_json() or {} # if empty
     new_type = data.get("type") # <-- why json input is important
@@ -296,7 +450,25 @@ def admin_add_pet_type():
 @admin_blueprint.route('/pettypes/<string:pet_type>', methods=['DELETE'])
 @admin_only
 def admin_delete_pet_type(pet_type):
-    """Admin endpoint to delete an existing pet type."""
+    """
+    Admin endpoint to delete an existing pet type.
+    ---
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: pet_type
+        schema:
+          type: string
+        required: true
+    responses:
+      200:
+        description: Pet type deleted
+      404:
+        description: Not found
+      401:
+        description: Unauthorized
+    """
 
     database = open_database()
     cursor = database.execute("DELETE FROM pet_types WHERE type = ?", (pet_type,))
