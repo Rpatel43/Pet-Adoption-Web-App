@@ -1,5 +1,6 @@
 """Contains all endpoints related to pet search and application process
 that will be accessed by non-administrative users."""
+# pylint: disable=E0611
 from sqlite3 import Error
 from flask import Blueprint, request, jsonify, session
 from backend.database import open_database
