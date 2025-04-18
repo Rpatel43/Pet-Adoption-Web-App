@@ -1,12 +1,32 @@
 """File that controls all endpoints for everything related to the admin
 portal and beyond, from signing in to managing services."""
-
+import os
 from functools import wraps
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, current_app, session
 
 
 # blueprint for main
 admin_blueprint = Blueprint('admin', __name__)
+
+# Create folder for uploading pet photots
+# root/static/uploads/ = path made with os
+PET_PHOTO_DIRECTORY = os.path.join(current_app.root_path, 'static', 'uploads')
+os.makedirs(PET_PHOTO_DIRECTORY, exist_ok=True) # exist_ok prevents error call in case
+                                                # its already there
+
+def admin_only(function):
+    """Wrap for functions that ensures only admin users are capable of accessing
+    certain application functions. Attached to all admin functions."""
+
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        """Wrap that utilizes session cookie to check if a user
+        can or cannot access the management portals services."""
+
+        if "admin_user" not in session:
+            return jsonify({"error": "User is not authorized."}), 401
+        return function(*args, **kwargs)
+    return wrap
 
 
 def admin_only(function):
