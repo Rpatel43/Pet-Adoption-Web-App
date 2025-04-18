@@ -31,7 +31,9 @@ def admin_only(function):
     return wrap
 
 
+  
 @admin_blueprint.route('/signin', methods=['POST'])
+@admin_only
 def admin_signin():
     """
     Manages admin sign in, ensuring login matches some currently hard
