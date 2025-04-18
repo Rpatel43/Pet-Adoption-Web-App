@@ -30,8 +30,9 @@ def admin_only(function):
         return function(*args, **kwargs)
     return wrap
 
-
+  
 @admin_blueprint.route('/signin', methods=['POST'])
+@admin_only
 def admin_signin():
     """
     Manages admin sign in, ensuring login matches some currently hard
@@ -95,6 +96,7 @@ def admin_signout():
       401:
         description: Unauthorized
     """
+    """Sign out the logged in admin user with a session clear."""
     session.pop('admin_user', None)
     return jsonify({'message': 'Admin signed out'}), 200
 
