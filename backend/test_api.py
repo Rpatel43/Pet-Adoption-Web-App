@@ -20,20 +20,20 @@ def test_client(tmp_path):
     with app.app_context():
 
         init_database()
-        db = open_database()
-        db.execute(
+        database = open_database()
+        database.execute(
             """INSERT INTO pets
                (name, type, sex, bio, health_info, size, weight, status, picture)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             ("Dakota", "Dog", "F", "Friendly dog", "Healthy", "Medium", "20lbs", "Available", "")
         )
-        db.execute(
+        database.execute(
             """INSERT INTO pets
                (name, type, sex, bio, health_info, size, weight, status, picture)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             ("Sylvester", "Cat", "M", "Playful cat", "Healthy", "Small", "12lbs", "Available", "")
         )
-        db.commit()
+        database.commit()
 
     with app.test_client() as client:
         yield client
@@ -111,28 +111,28 @@ def test_user_signup_and_login_flow(test_client):
     """End-to-end signup, session, and logout."""
     signup = {'first_name': 'A', 'last_name': 'B',
               'username': 'userX', 'password': 'pass1234', 'password_conf': 'pass1234'}
-    r1 = test_client.post('/api/signup', json=signup)
-    assert r1.status_code == 201
+    resp1 = test_client.post('/api/signup', json=signup)
+    assert resp1.status_code == 201
     # Duplicate username
-    r1b = test_client.post('/api/signup', json=signup)
-    assert r1b.status_code == 409
+    resp1b = test_client.post('/api/signup', json=signup)
+    assert resp1b.status_code == 409
     # Short password
     bad = signup.copy()
     bad['password'] = bad['password_conf'] = 'short'
-    r2 = test_client.post('/api/signup', json=bad)
-    assert r2.status_code == 400
+    resp2 = test_client.post('/api/signup', json=bad)
+    assert resp2.status_code == 400
     # Login
-    r3 = test_client.post('/api/signin', json={'username': 'userX', 'password': 'pass1234'})
-    assert r3.status_code == 200
+    resp3 = test_client.post('/api/signin', json={'username': 'userX', 'password': 'pass1234'})
+    assert resp3.status_code == 200
     # Check session
-    r4 = test_client.get('/api/session')
-    assert r4.get_json()['user']['username'] == 'userX'
+    resp4 = test_client.get('/api/session')
+    assert resp4.get_json()['user']['username'] == 'userX'
     # Logout
-    r5 = test_client.post('/api/signout')
-    assert r5.status_code == 200
+    resp5 = test_client.post('/api/signout')
+    assert resp5.status_code == 200
     # Now session is None
-    r6 = test_client.get('/api/session')
-    assert r6.get_json()['user'] is None
+    resp6 = test_client.get('/api/session')
+    assert resp6.get_json()['user'] is None
 
 def test_application_without_login(test_client):
     """Ensure user cannot apply when not signed in."""
