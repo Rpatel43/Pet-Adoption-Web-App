@@ -29,6 +29,21 @@ def admin_only(function):
     return wrap
 
 
+def admin_only(function):
+    """Wrap for functions that ensures only admin users are capable of accessing
+    certain application functions. Attached to all admin functions."""
+
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        """Wrap that utilizes session cookie to check if a user
+        can or cannot access the management portals services."""
+
+        if "admin_user" not in session:
+            return jsonify({"error": "User is not authorized."}), 401
+        return function(*args, **kwargs)
+    return wrap
+
+
 @admin_blueprint.route('/signin', methods=['POST'])
 @admin_only
 def admin_signin():
