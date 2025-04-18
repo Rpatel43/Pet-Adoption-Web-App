@@ -1,12 +1,31 @@
-"""File that controls all enpoints for everything related to the admin
-portal and beyond, from signing in to managing applications."""
-from flask import Blueprint, request, jsonify
+"""File that controls all endpoints for everything related to the admin
+portal and beyond, from signing in to managing services."""
+
+from functools import wraps
+from flask import Blueprint, request, jsonify, session
+
 
 # blueprint for main
 admin_blueprint = Blueprint('admin', __name__)
 
 
+def admin_only(function):
+    """Wrap for functions that ensures only admin users are capable of accessing
+    certain application functions. Attached to all admin functions."""
+
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        """Wrap that utilizes session cookie to check if a user
+        can or cannot access the management portals services."""
+
+        if "admin_user" not in session:
+            return jsonify({"error": "User is not authorized."}), 401
+        return function(*args, **kwargs)
+    return wrap
+
+
 @admin_blueprint.route('/signin', methods=['POST'])
+@admin_only
 def admin_signin():
     """Manages admin sign in, ensuring login matches some currently hard
     coded login information."""
@@ -24,8 +43,9 @@ def admin_signin():
 
 
 @admin_blueprint.route('/dashboard', methods=['GET'])
+@admin_only
 def admin_dashboard():
-    """Contains all neccessary data that the admin may or may not
+    """Contains all necessary data that the admin may or may not
     need access to when using the management portal."""
 
     # Stub - return fake dashboard data
@@ -40,6 +60,7 @@ def admin_dashboard():
 
 
 @admin_blueprint.route('/pet', methods=['POST'])
+@admin_only
 def add_pet():
     """Controls management's abiltiy to add new pet listings."""
 
@@ -53,6 +74,7 @@ def add_pet():
 
 
 @admin_blueprint.route('/pet/<int:pet_id>', methods=['PUT'])
+@admin_only
 def edit_pet(pet_id):
     """Controls management's ability to edit an existing pet listing."""
 
@@ -67,6 +89,7 @@ def edit_pet(pet_id):
 
 
 @admin_blueprint.route('/pet/<int:pet_id>', methods=['DELETE'])
+@admin_only
 def delete_pet(pet_id):
     """Controls management's ability to delete existing pet listings."""
     # Stub - delete a pet listing
@@ -75,6 +98,7 @@ def delete_pet(pet_id):
 
 
 @admin_blueprint.route('/applications', methods=['GET'])
+@admin_only
 def view_applications():
     """Grabs list of all currently submitted pet applications."""
 
@@ -84,6 +108,7 @@ def view_applications():
 
 
 @admin_blueprint.route('/application/<int:app_id>', methods=['PUT'])
+@admin_only
 def update_application(app_id):
     """Allows management to update the status of an application.
     Note how we need to take in the application ID."""
@@ -103,6 +128,7 @@ pet_types = ["Dog", "Cat"]
 
 
 @admin_blueprint.route('/pettypes', methods=['POST'])
+@admin_only
 def admin_add_pet_type():
     """ Admin endpoint to add a new pet type.
     Expects a JSON input of { "type": "new_type" }"""
@@ -121,6 +147,7 @@ def admin_add_pet_type():
 
 
 @admin_blueprint.route('/pettypes/<string:pet_type>', methods=['DELETE'])
+@admin_only
 def admin_delete_pet_type(pet_type):
     """Admin endpoint to delete an existing pet type."""
 
