@@ -2,8 +2,8 @@
 that will be accessed by non-administrative users."""
 from sqlite3 import Error
 from flask import Blueprint, request, jsonify, session
-from .database import open_database
-from .user import user_only
+from backend.database import open_database
+from backend.user import user_only
 
 # blueprint for main
 pets_blueprint = Blueprint('pets', __name__)
