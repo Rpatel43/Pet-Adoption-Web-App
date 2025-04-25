@@ -60,6 +60,7 @@ jobs:
 
 
       - name: Build Frontend
+        working-directory: ./frontend
         run: |
           npm run build
 
