@@ -54,9 +54,10 @@ jobs:
           echo "Workspace contents:"
           ls -1
 
-      - name: Install Frontend Dependencies
-        run: |
-          npm ci
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
 
       - name: Build Frontend
         run: |
