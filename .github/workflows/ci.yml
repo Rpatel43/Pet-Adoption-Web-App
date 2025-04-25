@@ -16,7 +16,7 @@ jobs:
 
     env:
       FLASK_APP: backend.main
-      SECRET_KEY: $({ secrets.SECRET_KEY })
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DATABASE: backend/pet_adoption_website.db
 
     steps:
@@ -28,15 +28,41 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install Dependencies
+      - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Lint Code with pylint
+      - name: Lint Python Code
         run: |
           pylint backend/*.py
 
-      - name: Run Unit Tests
+      - name: Run Python Unit Tests
         run: |
           python -m pytest backend/test_api.py
+
+      # Frontend pipeline
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Debug:npm & workspace
+        run: |
+          echo "NODE: $(node --version)"
+          echo "NPM:  $(npm --version)"
+          echo "Workspace contents:"
+          ls -1
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm run build
+
+      - name: Build API image
+        run: docker build -t team29/pet-adopt-api:latest --file backend/Dockerfile .

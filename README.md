@@ -16,3 +16,4 @@ https://www.figma.com/design/0H0O1hAC6xJz2soKSml86l/CSE2102-Site-Prototype?node-
 # docker
 1. `docker build -t team29/pet-adopt-api:latest .`
 2. `docker run --rm -p 5000:5000 \ -e SECRET_KEY=${SECRET_KEY} \ team29/pet-adopt-api:latest`
+3. OR, if secret key isn't needed (the way we do it locally): `docker run --rm -p 5000:5000 team29/pet-adopt-api:latest`

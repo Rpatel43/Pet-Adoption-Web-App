@@ -1,0 +1,60 @@
+/* Global Styles for PetAdopt SPA */
+
+:root {
+  /* Font stacks */
+  --bs-body-font-family: 'Inter', sans-serif;
+  --bs-heading-font-family: 'Montserrat', sans-serif;
+
+  /* Color scheme overrides */
+  --bs-primary: #2a9d8f;
+  --bs-secondary: #264653;
+
+  /* Base text and background */
+  color-scheme: light dark;
+}
+
+/* Base resets */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--bs-body-font-family);
+  background-color: #f4f4f4;
+  color: #213547;
+}
+
+/* Links */
+a {
+  font-weight: 500;
+  color: var(--bs-primary);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--bs-secondary);
+}
+
+/* Container layout */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: left;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--bs-heading-font-family);
+}
+
+/* Navbar brand */
+.navbar-brand {
+  font-family: var(--bs-heading-font-family) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+/* Card hover lift effect */
+.card:hover {
+  transform: translateY(-4px);
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
