@@ -47,6 +47,13 @@ jobs:
         with:
           node-version: '18.x'
 
+      - name: Debug:npm & workspace
+        run: |
+          echo "NODE: $(node --version)"
+          echo "NPM:  $(npm --version)"
+          echo "Workspace contents:"
+          ls -1
+
       - name: Install Frontend Dependencies
         run: |
           npm ci
