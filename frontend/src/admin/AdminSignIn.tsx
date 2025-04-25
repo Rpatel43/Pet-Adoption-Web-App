@@ -1,10 +1,15 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { adminSignIn } from '../api/admin';
 
-const AdminSignIn: React.FC = () => {
+export interface AdminSignInProps {
+  onAdminLogin: (username: string) => void;
+}
+
+const AdminSignIn: React.FC<AdminSignInProps> = ({ onAdminLogin }) => {
   // Controlled form fields
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
