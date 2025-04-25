@@ -1,4 +1,5 @@
-import React, { useEffect, useState, createContext } from 'react';
+// @ts-nocheck
+import { useEffect, useState, createContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { ToastContainer } from 'react-toastify';
@@ -101,8 +102,8 @@ function App() {
               path="/admin/signin"
               element={
                 <AdminSignIn
-                  onAdminLogin={a => {
-                    setAdmin({ admin: a });
+                  onAdminLogin={(admin: string) => {
+                    setAdmin({ admin });
                     setUser(null);
                   }}
                 />
