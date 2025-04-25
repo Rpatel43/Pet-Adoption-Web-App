@@ -64,6 +64,8 @@ jobs:
         run: |
           npm run build
 
-      - name: Build Docker Image
-        run: |
-          docker build -t team29/pet-adopt-api:latest backend/
+      - name: Build API image
+        run: docker build \
+          -t team29/pet-adopt-api:latest \
+          --file backend/Dockerfile \
+          .
