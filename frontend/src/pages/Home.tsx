@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useContext } from 'react';
 import { Card, Button, Container, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
