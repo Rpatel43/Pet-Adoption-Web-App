@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "pet-adopt-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "bootstrap": "^5.3.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-bootstrap": "^2.10.9",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.30.0",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

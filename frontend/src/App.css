@@ -40,3 +40,28 @@
 .read-the-docs {
   color: #888;
 }
+
+:root {
+  /* existing font-family, colors, dark-mode… */
+
+  /* ─── NEW BOOTSTRAP OVERRIDES ─── */
+  --bs-primary:   #2a9d8f;
+  --bs-secondary: #264653;
+  --bs-body-font-family: 'Inter', sans-serif;
+  --bs-heading-font-family: 'Montserrat', sans-serif;
+}
+
+/* existing a, body, h1, button… */
+
+/* ─── NEW UTILITY STYLES ─── */
+.navbar-brand {
+  font-family: var(--bs-heading-font-family) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
