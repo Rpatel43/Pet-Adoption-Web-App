@@ -19,5 +19,5 @@ https://www.figma.com/design/0H0O1hAC6xJz2soKSml86l/CSE2102-Site-Prototype?node-
 3. OR, if secret key isn't needed (the way we do it locally): `docker run --rm -p 5000:5000 team29/pet-adopt-api:latest`
 
 # to run the frontend:
-1. 'cd frontend'
-2. 'npm run dev'
+1. `cd frontend`
+2. `npm run dev`
