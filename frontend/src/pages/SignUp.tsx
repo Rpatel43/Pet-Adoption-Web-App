@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { signUp } from '../api/auth';
+import { signUp, signIn } from '../api/auth';
 
 interface SignUpProps {
   /**
@@ -71,6 +71,8 @@ const SignUp: React.FC<SignUpProps> = ({ onSignup }) => {
         username.trim(),
         password
       );
+      // now have user sign in
+      await signIn(newUsername, password)
       onSignup({ username: newUsername });
       toast.success('Account created successfully!');
       // Redirect to home (or anywhere)

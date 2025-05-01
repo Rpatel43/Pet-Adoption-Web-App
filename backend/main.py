@@ -1,7 +1,10 @@
 """Main file for API. Handles blueprints and starting the app up."""
 from os import makedirs, environ, path
 from secrets import token_hex
-from flasgger import Swagger
+try:
+    from flasgger import Swagger
+except ImportError:
+    Swagger = None
 from flask import Flask
 from backend.user import user_blueprint
 from backend.pets import pets_blueprint
@@ -34,7 +37,8 @@ def build_app():
     app.config['PET_PHOTO_DIRECTORY'] = upload_dir
 
 
-    Swagger(app)
+    if Swagger:
+        Swagger(app)
 
 
     init_application(app)
