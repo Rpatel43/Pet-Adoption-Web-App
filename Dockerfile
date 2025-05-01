@@ -5,10 +5,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend
 ENV PYTHONPATH=/app
 ENV FLASK_APP=backend.main:build_app
-
-RUN mkdir -p instance
+RUN mkdir -p backend/instance \
+ && mkdir -p backend/static/uploads
 RUN flask init-database
-
 RUN flask init-database
 EXPOSE 5000
 CMD ["python", "-m", "backend.main"]
