@@ -1,5 +1,5 @@
 // src/main.tsx
-console.log('🚀 main.tsx loaded—and BrowserRouter should be in effect');
+console.log('main.tsx loaded');
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
