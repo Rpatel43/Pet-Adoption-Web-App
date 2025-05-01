@@ -137,67 +137,68 @@ def init_database():
 
 
     # Default Pet listings initial data
-    cursor = database.execute("SELECT COUNT(*) AS count FROM pets;")
-    if cursor.fetchone()["count"] == 0:
-        default_pets = [
-            (
-                "Loki", "Cat", "M",
-                "Devil cat during the day, a pair of floating eye balls at night. He will eat your Doritos", # pylint: disable=line-too-long
-                "Healthy",
-                "Large", "13 lbs",
-                "Available",
-                "/static/uploads/loki.jpg"
-            ),
-            (
-                "Molly", "Dog", "F",
-                "The sweetest old girl. Terrified of thunderstorms and will hide behind random objects (you can still see her)", # pylint: disable=line-too-long
-                "Healthy, has arthritis",
-                "Medium/large", "56 lbs",
-                "Available",
-                "/static/uploads/Molly.png"
-            ),
-            (
-                "Chiliman", "Cat", "M",
-                "1 yr old. Cuddly. Loves freeze dried minnows and touching absolutely everything you own.", # pylint: disable=line-too-long
-                "Healthy, neutered.",
-                "Small", "10 lbs",
-                "Available",
-                "/static/uploads/chiliman.jpg"
-            ),
-            (
-                "Mustang", "Cat", "F",
-                "9 yr old. Independent outdoor cat who loves to bring gifts and purr loudly to show her love.", # pylint: disable=line-too-long
-                "Healthy.",
-                "Medium", "8 lbs",
-                "Available",
-                "/static/uploads/mustang.jpg"
-            ),
-            (
-                "Lily", "Cat", "F",
-                "7 yr old. You receive a flurry of happy meow greeting when she sees you, she loves to nap in the sun along side you.", # pylint: disable=line-too-long
-                "Healthy.",
-                "Large", "14 lbs",
-                "Available",
-                "/static/uploads/lily.jpg"
-            ),
-            (
-                "Annie", "Dog", "F",
-                "8 yr old. Loves playing and is extremely friendly, loves to snuggle in your lap.", # pylint: disable=line-too-long
-                "Healthy, has seizure condition.",
-                "Medium", "40 lbs",
-                "Available",
-                "/static/uploads/annie.jpg"
-            )
-        ]
-        for pet in default_pets:
-            database.execute(
-                """
-                INSERT INTO pets
-                  (name, type, sex, bio, health_info, size, weight, status, picture)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                pet
-            )
+    if not current_app.testing: # we dont want this to interrupt tests
+        cursor = database.execute("SELECT COUNT(*) AS count FROM pets;")
+        if cursor.fetchone()["count"] == 0:
+            default_pets = [
+                (
+                    "Loki", "Cat", "M",
+                    "Devil cat during the day, a pair of floating eye balls at night. He will eat your Doritos", # pylint: disable=line-too-long
+                    "Healthy",
+                    "Large", "13 lbs",
+                    "Available",
+                    "/static/uploads/loki.jpg"
+                ),
+                (
+                    "Molly", "Dog", "F",
+                    "The sweetest old girl. Terrified of thunderstorms and will hide behind random objects (you can still see her)", # pylint: disable=line-too-long
+                    "Healthy, has arthritis",
+                    "Medium/large", "56 lbs",
+                    "Available",
+                    "/static/uploads/Molly.png"
+                ),
+                (
+                    "Chiliman", "Cat", "M",
+                    "1 yr old. Cuddly. Loves freeze dried minnows and touching absolutely everything you own.", # pylint: disable=line-too-long
+                    "Healthy, neutered.",
+                    "Small", "10 lbs",
+                    "Available",
+                    "/static/uploads/chiliman.jpg"
+                ),
+                (
+                    "Mustang", "Cat", "F",
+                    "9 yr old. Independent outdoor cat who loves to bring gifts and purr loudly to show her love.", # pylint: disable=line-too-long
+                    "Healthy.",
+                    "Medium", "8 lbs",
+                    "Available",
+                    "/static/uploads/mustang.jpg"
+                ),
+                (
+                    "Lily", "Cat", "F",
+                    "7 yr old. You receive a flurry of happy meow greeting when she sees you, she loves to nap in the sun along side you.", # pylint: disable=line-too-long
+                    "Healthy.",
+                    "Large", "14 lbs",
+                    "Available",
+                    "/static/uploads/lily.jpg"
+                ),
+                (
+                    "Annie", "Dog", "F",
+                    "8 yr old. Loves playing and is extremely friendly, loves to snuggle in your lap.", # pylint: disable=line-too-long
+                    "Healthy, has seizure condition.",
+                    "Medium", "40 lbs",
+                    "Available",
+                    "/static/uploads/annie.jpg"
+                )
+            ]
+            for pet in default_pets:
+                database.execute(
+                    """
+                    INSERT INTO pets
+                      (name, type, sex, bio, health_info, size, weight, status, picture)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    pet
+                )
 
     # commit to db
     database.commit()
