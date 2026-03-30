@@ -1,12 +1,19 @@
-"# cse2102-spring25-Team29
-Ronit Patel rop21003" 
-Joseph Pizzuti jop19011
-Saoudkhan pathan Sap21027
-Rayna Spicher rcs20010
-https://trello.com/b/0zbMYZli/cse2102-team29
-https://www.figma.com/design/0H0O1hAC6xJz2soKSml86l/CSE2102-Site-Prototype?node-id=0-1&t=XUrpxJiLNF33jHGe-1
+# Pet Adoption Web App
+A full-stack platform connecting adoptable pets with users. Built with a focus on seamless user experience and robust data management.
 
-# getting repo locally and getting db
+## Features
+* **User Authentication:** Secure login for adopters and shelter admins.
+* **Pet Listings:** Dynamic browsing with filtering by species, age, and breed.
+* **Adoption Requests:** Integrated form submission for adoption applications.
+* **Responsive Design:** Fully optimized for mobile and desktop viewing.
+
+## Tech Stack
+* **Frontend:** React (TypeScript), Vite, Tailwind CSS
+* **Backend:** Python (Flask), SQLAlchemy
+* **DevOps:** Docker, GitHub Actions (CI/CD)
+* **Design:** [Figma](https://www.figma.com/design/0H0O1hAC6xJz2soKSml86l/CSE2102-Site-Prototype?node-id=0-1&t=XUrpxJiLNF33jHGe-1) | **Project Management:** [Trello](https://trello.com/b/0zbMYZli/cse2102-team29)
+
+## Getting repo locally and getting db
 1. clone repo
 2. `pip install -r requirements.txt`
 3. `generate key: 'export SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32)")`
