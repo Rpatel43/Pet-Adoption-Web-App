@@ -14,7 +14,7 @@ export interface Pet {
   picture: string; // URL to the pet’s image
 }
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 /**
  * Fetch all available pet types (for filtering UI).

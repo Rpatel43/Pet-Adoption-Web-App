@@ -1,5 +1,6 @@
 """Database for the pet adoption website. contains all neccessary data tables and preload values."""
 import sqlite3
+from os import path
 from flask import current_app, g
 import click
 
@@ -210,6 +211,11 @@ def init_application(app):
     app.teardown_appcontext(close_database)
     # adds our init database command below
     app.cli.add_command(init_database_command)
+
+    # If the database file does not exist yet, create it automatically.
+    if not path.exists(app.config['DATABASE']):
+        with app.app_context():
+            init_database()
 
 
 @click.command('init-database')

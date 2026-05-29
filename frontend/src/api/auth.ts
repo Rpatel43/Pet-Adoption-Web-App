@@ -2,7 +2,7 @@
  * API functions for user authentication and session management.
  */
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 /**
  * Get the current user's session.

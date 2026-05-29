@@ -5,7 +5,7 @@ try:
     from flasgger import Swagger
 except ImportError:
     Swagger = None
-from flask import Flask
+from flask import Flask, request, make_response
 from backend.user import user_blueprint
 from backend.pets import pets_blueprint
 from backend.admin import admin_blueprint
@@ -40,7 +40,7 @@ def build_app():
     if Swagger:
         Swagger(app)
 
-
+    configure_cors(app)
     init_application(app)
 
     # blueprint registration for all of our module files
@@ -60,6 +60,34 @@ def build_app():
     return app
 
 
+def configure_cors(app):
+    @app.after_request
+    def add_cors_headers(response):
+        origin = request.headers.get('Origin')
+        if origin:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        return response
+
+    @app.route('/api', methods=['OPTIONS'])
+    @app.route('/api/<path:path>', methods=['OPTIONS'])
+    def preflight(path=None):
+        response = make_response('', 204)
+        origin = request.headers.get('Origin')
+        if origin:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        return response
+
+
 if __name__ == '__main__':
     application = build_app()
-    application.run(host='0.0.0.0', port=5000, debug=True)
+    application.run(
+        host='0.0.0.0',
+        port=int(environ.get('PORT', 5000)),
+        debug=environ.get('FLASK_DEBUG', '0') in ('1', 'true', 'True')
+    )

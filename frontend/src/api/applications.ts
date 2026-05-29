@@ -11,7 +11,7 @@ export interface Application {
   application_response: string;
 }
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 /**
  * Fetches all of the current user's applications.
